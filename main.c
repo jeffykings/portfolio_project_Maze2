@@ -10,8 +10,11 @@ int main(void)
     if (init_sdl() != 0)
         return (EXIT_FAILURE);
 
-    load_textures();  /* Load textures */
-    load_map("map.txt"); /* Load the map file */
+    if (load_textures() != 0)
+        return (EXIT_FAILURE);
+
+    if (load_map("map.txt") != 0)
+        return (EXIT_FAILURE);
 
     /* Game loop */
     while (!quit_game)
@@ -19,6 +22,7 @@ int main(void)
         handle_input();
         render_walls();
         SDL_RenderPresent(renderer); /* Update screen */
+        SDL_Delay(16); /* Limit to ~60 frames per second */
     }
 
     cleanup_sdl();
@@ -43,6 +47,14 @@ int init_sdl(void)
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL)
         return (-1);
+
+    quit_game = 0; /* Initialize quit flag to false */
+    player.x = 3.0;
+    player.y = 3.0;
+    player.dir_x = -1.0;
+    player.dir_y = 0.0;
+    player.plane_x = 0.0;
+    player.plane_y = 0.66;
 
     return (0);
 }
