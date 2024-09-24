@@ -21,6 +21,7 @@ void handle_input(void);
 void render_walls(void);
 int load_map(const char *filename);
 int load_textures(void);
+void cleanup_textures(void);
 int check_collision(float new_x, float new_y);
 void move_forward(void);
 void move_backward(void);
@@ -34,6 +35,9 @@ int quit_game;
 
 /* Map data */
 int map[MAP_WIDTH][MAP_HEIGHT];
+
+/* Wall textures */
+extern SDL_Texture *wall_textures[4];
 
 /* Player struct */
 typedef struct Player
