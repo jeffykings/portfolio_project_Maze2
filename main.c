@@ -25,6 +25,7 @@ int main(void)
         SDL_Delay(16); /* Limit to ~60 frames per second */
     }
 
+    cleanup_textures();
     cleanup_sdl();
     return (0);
 }
