@@ -1,7 +1,7 @@
 #include "main.h"
 
 /**
- * render_walls - Render the 3D walls using raycasting
+ * render_walls - Render the 3D walls using raycasting, now with textures
  */
 void render_walls(void)
 {
@@ -78,7 +78,25 @@ void render_walls(void)
         if (draw_end >= SCREEN_HEIGHT)
             draw_end = SCREEN_HEIGHT - 1;
 
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderDrawLine(renderer, x, draw_start, x, draw_end);
+        /* Select texture based on wall orientation */
+        SDL_Texture *wall_texture;
+        if (side == 1)
+        {
+            if (ray_dir_y > 0)
+                wall_texture = wall_textures[1]; /* South */
+            else
+                wall_texture = wall_textures[0]; /* North */
+        }
+        else
+        {
+            if (ray_dir_x > 0)
+                wall_texture = wall_textures[3]; /* West */
+            else
+                wall_texture = wall_textures[2]; /* East */
+        }
+
+        /* Render the texture on the wall */
+        SDL_Rect rect = {x, draw_start, 1, draw_end - draw_start};
+        SDL_RenderCopy(renderer, wall_texture, NULL, &rect);
     }
 }
