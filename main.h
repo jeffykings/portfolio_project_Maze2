@@ -2,7 +2,7 @@
 #define MAIN_H
 
 /** Define the Player struct **/
-typedef struct {
+typedef struct Player {
     float x;   // Player's x position
     float y;   // Player's y position
     float angle;  // Player's view angle
