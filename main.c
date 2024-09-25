@@ -5,6 +5,7 @@ SDL_Renderer *renderer = NULL;
 int quit_game = 0;
 int map[MAP_WIDTH][MAP_HEIGHT];
 Player player;
+SDL_Texture *wall_textures[4];
 
 /**
  * main - Entry point of the program
