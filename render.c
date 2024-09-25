@@ -102,5 +102,40 @@ void render_frame(GameState *game)
         SDL_RenderDrawLine(game->renderer, x, wall_bottom, x, SCREEN_HEIGHT);
     }
 
+    if (game->show_map)
+        draw_map(game);
+
     SDL_RenderPresent(game->renderer);
+}
+
+/**
+ * draw_map - Draw the 2D map on the screen
+ * @game: Pointer to the GameState structure
+ */
+void draw_map(GameState *game)
+{
+    int map_size = 100;
+    int tile_size = map_size / MAP_WIDTH;
+
+    for (int y = 0; y < MAP_HEIGHT; y++)
+    {
+        for (int x = 0; x < MAP_WIDTH; x++)
+        {
+            SDL_Rect tile_rect = {x * tile_size, y * tile_size, tile_size, tile_size};
+            if (worldMap[x][y] != 0)
+                SDL_SetRenderDrawColor(game->renderer, 255, 255, 255, 255);
+            else
+                SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 255);
+            SDL_RenderFillRect(game->renderer, &tile_rect);
+        }
+    }
+
+    /** Draw player on map */
+    SDL_SetRenderDrawColor(game->renderer, 255, 0, 0, 255);
+    SDL_Rect player_rect = {
+        (int)(game->player_pos.x * tile_size) - 2,
+        (int)(game->player_pos.y * tile_size) - 2,
+        4, 4
+    };
+    SDL_RenderFillRect(game->renderer, &player_rect);
 }
