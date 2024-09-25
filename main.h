@@ -14,6 +14,9 @@
 #define MOVE_SPEED 0.1
 #define ROT_SPEED 0.05
 
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
+
 /* Function prototypes */
 int init_sdl(void);
 void cleanup_sdl(void);

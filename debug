@@ -1,0 +1,400 @@
+collision.c
+#include "main.h"
+
+/**
+ * check_collision - Check for player collisions with walls
+ *
+ * @new_x: New X coordinate of the player
+ * @new_y: New Y coordinate of the player
+ *
+ * Return: 1 if collision, 0 if no collision
+ */
+int check_collision(float new_x, float new_y)
+{
+    if (map[(int)new_x][(int)new_y] > 0)
+        return (1);
+    return (0);
+}
+input.c
+#include "main.h"
+
+/**
+ * handle_input - Process player input for movement and rotation
+ */
+void handle_input(void)
+{
+    SDL_Event e;
+    while (SDL_PollEvent(&e))
+    {
+        if (e.type == SDL_QUIT)
+            quit_game = 1;
+
+        if (e.type == SDL_KEYDOWN)
+        {
+            switch (e.key.keysym.sym)
+            {
+                case SDLK_w: move_forward(); break;
+                case SDLK_s: move_backward(); break;
+                case SDLK_a: rotate_left(); break;
+                case SDLK_d: rotate_right(); break;
+            }
+        }
+    }
+}
+
+/**
+ * move_forward - Move the player forward
+ */
+void move_forward(void)
+{
+    if (map[(int)(player.x + player.dir_x * MOVE_SPEED)][(int)(player.y)] == 0)
+        player.x += player.dir_x * MOVE_SPEED;
+    if (map[(int)(player.x)][(int)(player.y + player.dir_y * MOVE_SPEED)] == 0)
+        player.y += player.dir_y * MOVE_SPEED;
+}
+
+/**
+ * move_backward - Move the player backward
+ */
+void move_backward(void)
+{
+    if (map[(int)(player.x - player.dir_x * MOVE_SPEED)][(int)(player.y)] == 0)
+        player.x -= player.dir_x * MOVE_SPEED;
+    if (map[(int)(player.x)][(int)(player.y - player.dir_y * MOVE_SPEED)] == 0)
+        player.y -= player.dir_y * MOVE_SPEED;
+}
+
+/**
+ * rotate_left - Rotate the player left
+ */
+void rotate_left(void)
+{
+    double old_dir_x = player.dir_x;
+    player.dir_x = player.dir_x * cos(-ROT_SPEED) - player.dir_y * sin(-ROT_SPEED);
+    player.dir_y = old_dir_x * sin(-ROT_SPEED) + player.dir_y * cos(-ROT_SPEED);
+    double old_plane_x = player.plane_x;
+    player.plane_x = player.plane_x * cos(-ROT_SPEED) - player.plane_y * sin(-ROT_SPEED);
+    player.plane_y = old_plane_x * sin(-ROT_SPEED) + player.plane_y * cos(-ROT_SPEED);
+}
+
+/**
+ * rotate_right - Rotate the player right
+ */
+void rotate_right(void)
+{
+    double old_dir_x = player.dir_x;
+    player.dir_x = player.dir_x * cos(ROT_SPEED) - player.dir_y * sin(ROT_SPEED);
+    player.dir_y = old_dir_x * sin(ROT_SPEED) + player.dir_y * cos(ROT_SPEED);
+    double old_plane_x = player.plane_x;
+    player.plane_x = player.plane_x * cos(ROT_SPEED) - player.plane_y * sin(ROT_SPEED);
+    player.plane_y = old_plane_x * sin(ROT_SPEED) + player.plane_y * cos(ROT_SPEED);
+}
+main.c
+#include "main.h"
+
+/**
+ * main - Entry point of the program
+ *
+ * Return: 0 on success, exit code on failure
+ */
+int main(void)
+{
+    if (init_sdl() != 0)
+        return (EXIT_FAILURE);
+
+    if (load_textures() != 0)
+        return (EXIT_FAILURE);
+
+    if (load_map("map.txt") != 0)
+        return (EXIT_FAILURE);
+
+    /* Game loop */
+    while (!quit_game)
+    {
+        handle_input();
+        render_walls();
+        SDL_RenderPresent(renderer); /* Update screen */
+        SDL_Delay(16); /* Limit to ~60 frames per second */
+    }
+
+    cleanup_textures();
+    cleanup_sdl();
+    return (0);
+}
+
+/**
+ * init_sdl - Initialize SDL2 and create window
+ *
+ * Return: 0 on success, -1 on failure
+ */
+int init_sdl(void)
+{
+    if (SDL_Init(SDL_INIT_VIDEO) < 0)
+        return (-1);
+
+    window = SDL_CreateWindow("Maze Project", SDL_WINDOWPOS_UNDEFINED,
+                              SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (window == NULL)
+        return (-1);
+
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (renderer == NULL)
+        return (-1);
+
+    quit_game = 0; /* Initialize quit flag to false */
+    player.x = 3.0;
+    player.y = 3.0;
+    player.dir_x = -1.0;
+    player.dir_y = 0.0;
+    player.plane_x = 0.0;
+    player.plane_y = 0.66;
+
+    return (0);
+}
+
+/**
+ * cleanup_sdl - Clean up and quit SDL
+ */
+void cleanup_sdl(void)
+{
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+}
+main.h
+#ifndef MAIN_H
+#define MAIN_H
+
+#include <SDL2/SDL.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+/* Screen dimensions */
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+#define MAP_WIDTH 24
+#define MAP_HEIGHT 24
+#define MOVE_SPEED 0.1
+#define ROT_SPEED 0.05
+
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
+
+/* Function prototypes */
+int init_sdl(void);
+void cleanup_sdl(void);
+void handle_input(void);
+void render_walls(void);
+int load_map(const char *filename);
+int load_textures(void);
+void cleanup_textures(void);
+int check_collision(float new_x, float new_y);
+void move_forward(void);
+void move_backward(void);
+void rotate_left(void);
+void rotate_right(void);
+
+/* SDL variables */
+SDL_Window *window;
+SDL_Renderer *renderer;
+int quit_game;
+
+/* Map data */
+int map[MAP_WIDTH][MAP_HEIGHT];
+
+/* Wall textures */
+extern SDL_Texture *wall_textures[4];
+
+/* Player struct */
+typedef struct Player
+{
+    float x, y;
+    float dir_x, dir_y;
+    float plane_x, plane_y;
+} Player;
+
+Player player;
+
+#endif
+parser.c
+#include "main.h"
+
+/**
+ * load_map - Load map data from a file
+ *
+ * @filename: Path to the map file
+ *
+ * Return: 0 on success, -1 on failure
+ */
+int load_map(const char *filename)
+{
+    FILE *file = fopen(filename, "r");
+    if (!file)
+        return (-1);
+
+    /* Parse map file and load into array */
+    for (int i = 0; i < MAP_HEIGHT; i++)
+    {
+        for (int j = 0; j < MAP_WIDTH; j++)
+        {
+            fscanf(file, "%d", &map[i][j]);
+        }
+    }
+    fclose(file);
+    return (0);
+}
+raycasting.c
+#include "main.h"
+
+/**
+ * render_walls - Render the 3D walls using raycasting, now with textures
+ */
+void render_walls(void)
+{
+    for (int x = 0; x < SCREEN_WIDTH; x++)
+    {
+        double camera_x = 2 * x / (double)SCREEN_WIDTH - 1;
+        double ray_dir_x = player.dir_x + player.plane_x * camera_x;
+        double ray_dir_y = player.dir_y + player.plane_y * camera_x;
+
+        int map_x = (int)player.x;
+        int map_y = (int)player.y;
+
+        double side_dist_x, side_dist_y;
+
+        double delta_dist_x = fabs(1 / ray_dir_x);
+        double delta_dist_y = fabs(1 / ray_dir_y);
+        double perp_wall_dist;
+
+        int step_x, step_y;
+        int hit = 0;
+        int side;
+
+        if (ray_dir_x < 0)
+        {
+            step_x = -1;
+            side_dist_x = (player.x - map_x) * delta_dist_x;
+        }
+        else
+        {
+            step_x = 1;
+            side_dist_x = (map_x + 1.0 - player.x) * delta_dist_x;
+        }
+
+        if (ray_dir_y < 0)
+        {
+            step_y = -1;
+            side_dist_y = (player.y - map_y) * delta_dist_y;
+        }
+        else
+        {
+            step_y = 1;
+            side_dist_y = (map_y + 1.0 - player.y) * delta_dist_y;
+        }
+
+        while (hit == 0)
+        {
+            if (side_dist_x < side_dist_y)
+            {
+                side_dist_x += delta_dist_x;
+                map_x += step_x;
+                side = 0;
+            }
+            else
+            {
+                side_dist_y += delta_dist_y;
+                map_y += step_y;
+                side = 1;
+            }
+            if (map[map_x][map_y] > 0)
+                hit = 1;
+        }
+
+        if (side == 0)
+            perp_wall_dist = (map_x - player.x + (1 - step_x) / 2) / ray_dir_x;
+        else
+            perp_wall_dist = (map_y - player.y + (1 - step_y) / 2) / ray_dir_y;
+
+        int line_height = (int)(SCREEN_HEIGHT / perp_wall_dist);
+
+        int draw_start = -line_height / 2 + SCREEN_HEIGHT / 2;
+        if (draw_start < 0)
+            draw_start = 0;
+        int draw_end = line_height / 2 + SCREEN_HEIGHT / 2;
+        if (draw_end >= SCREEN_HEIGHT)
+            draw_end = SCREEN_HEIGHT - 1;
+
+        /* Select texture based on wall orientation */
+        SDL_Texture *wall_texture;
+        if (side == 1)
+        {
+            if (ray_dir_y > 0)
+                wall_texture = wall_textures[1]; /* South */
+            else
+                wall_texture = wall_textures[0]; /* North */
+        }
+        else
+        {
+            if (ray_dir_x > 0)
+                wall_texture = wall_textures[3]; /* West */
+            else
+                wall_texture = wall_textures[2]; /* East */
+        }
+
+        /* Render the texture on the wall */
+        SDL_Rect rect = {x, draw_start, 1, draw_end - draw_start};
+        SDL_RenderCopy(renderer, wall_texture, NULL, &rect);
+    }
+}
+textures.c
+#include "main.h"
+
+/* Array to hold wall textures */
+SDL_Texture *wall_textures[4];
+
+/**
+ * load_textures - Load textures for walls
+ *
+ * Return: 0 on success, -1 on failure
+ */
+int load_textures(void)
+{
+    const char *texture_files[4] = {
+        "wall_north.bmp",
+        "wall_south.bmp",
+        "wall_east.bmp",
+        "wall_west.bmp"
+    };
+
+    for (int i = 0; i < 4; i++)
+    {
+        SDL_Surface *surface = SDL_LoadBMP(texture_files[i]);
+        if (!surface)
+        {
+            fprintf(stderr, "Error loading texture: %s\n", SDL_GetError());
+            return (-1);
+        }
+
+        wall_textures[i] = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+        if (!wall_textures[i])
+        {
+            fprintf(stderr, "Error creating texture: %s\n", SDL_GetError());
+            return (-1);
+        }
+    }
+
+    return (0);
+}
+
+/**
+ * cleanup_textures - Clean up loaded textures
+ */
+void cleanup_textures(void)
+{
+    for (int i = 0; i < 4; i++)
+    {
+        SDL_DestroyTexture(wall_textures[i]);
+    }
+}
