@@ -33,13 +33,13 @@ To build and run this game, you'll need:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/raycasting-maze-game.git
-   cd raycasting-maze-game
+   git clone https://github.com/jeffykings/portfolio_project_Maze2.git
+   cd portfolio_project_Maze2
    ```
 
 2. Compile the game:
    ```
-   gcc *.c -o maze_game -lSDL2 -lm
+   gcc -Wall -Werror -Wextra -pedantic *.c -o maze_game -lSDL2 -lm
    ```
 
    Or, if you have a Makefile:
