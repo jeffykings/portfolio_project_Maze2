@@ -25,24 +25,53 @@ void handle_events(GameState *game)
                     case SDLK_m:
                         game->show_map = !game->show_map;
                         break;
+                    case SDLK_r:
+                        game->is_raining = !game->is_raining;
+                        break;
+                    case SDLK_1:
+                    case SDLK_2:
+                    case SDLK_3:
+                        game->current_weapon = event.key.keysym.sym - SDLK_1;
+                        break;
                 }
                 break;
         }
     }
 
-    /** Handle continuous key presses */
+    /** Handle continuous key presses for movement */
+    float move_speed = 0.1f;
+    float rotation_speed = 0.05f;
+
     if (keyboard_state[SDL_SCANCODE_LEFT])
-        game->player_angle -= 0.05f;
+        game->player_angle -= rotation_speed;
     if (keyboard_state[SDL_SCANCODE_RIGHT])
-        game->player_angle += 0.05f;
-    if (keyboard_state[SDL_SCANCODE_UP])
+        game->player_angle += rotation_speed;
+
+    float move_x = 0, move_y = 0;
+    if (keyboard_state[SDL_SCANCODE_W])
     {
-        game->player_pos.x += cosf(game->player_angle) * 0.1f;
-        game->player_pos.y += sinf(game->player_angle) * 0.1f;
+        move_x += cosf(game->player_angle) * move_speed;
+        move_y += sinf(game->player_angle) * move_speed;
     }
-    if (keyboard_state[SDL_SCANCODE_DOWN])
+    if (keyboard_state[SDL_SCANCODE_S])
     {
-        game->player_pos.x -= cosf(game->player_angle) * 0.1f;
-        game->player_pos.y -= sinf(game->player_angle) * 0.1f;
+        move_x -= cosf(game->player_angle) * move_speed;
+        move_y -= sinf(game->player_angle) * move_speed;
     }
+    if (keyboard_state[SDL_SCANCODE_A])
+    {
+        move_x += sinf(game->player_angle) * move_speed;
+        move_y -= cosf(game->player_angle) * move_speed;
+    }
+    if (keyboard_state[SDL_SCANCODE_D])
+    {
+        move_x -= sinf(game->player_angle) * move_speed;
+        move_y += cosf(game->player_angle) * move_speed;
+    }
+
+    /** Apply movement if no collision */
+    if (!handle_collisions(game, game->player_pos.x + move_x, game->player_pos.y))
+        game->player_pos.x += move_x;
+    if (!handle_collisions(game, game->player_pos.x, game->player_pos.y + move_y))
+        game->player_pos.y += move_y;
 }
