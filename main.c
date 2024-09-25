@@ -4,7 +4,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 int quit_game = 0;
 int map[MAP_WIDTH][MAP_HEIGHT];
-Player player
+Player player;
 
 /**
  * main - Entry point of the program
