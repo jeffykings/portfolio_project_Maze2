@@ -5,7 +5,6 @@ int worldMap[MAP_WIDTH][MAP_HEIGHT] = {
     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
     {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
     {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
@@ -40,6 +39,7 @@ int main(void)
     game.player_pos.x = 22;
     game.player_pos.y = 12;
     game.player_angle = 0;
+    game.show_map = false;
 
     if (!init_sdl(&game))
     {
@@ -58,9 +58,10 @@ int main(void)
         handle_events(&game);
         update_game_state(&game);
         render_frame(&game);
+
+        SDL_Delay(16);  /** Cap to ~60 FPS */
     }
 
-    unload_textures();
     cleanup(&game);
     return 0;
 }
