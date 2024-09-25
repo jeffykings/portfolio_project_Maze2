@@ -8,5 +8,6 @@ void cleanup(GameState *game)
 {
     SDL_DestroyRenderer(game->renderer);
     SDL_DestroyWindow(game->window);
+    unload_textures();
     SDL_Quit();
 }
