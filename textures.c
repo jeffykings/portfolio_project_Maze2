@@ -29,7 +29,6 @@ bool load_textures(void)
             return false;
         }
     }
-
     return true;
 }
 
