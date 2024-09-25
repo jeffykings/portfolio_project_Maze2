@@ -24,6 +24,7 @@ typedef struct {
     bool is_running;
     Vector2 player_pos;
     float player_angle;
+    bool show_map;
 } GameState;
 
 /** Function prototypes */
@@ -32,11 +33,11 @@ void handle_events(GameState *game);
 void update_game_state(GameState *game);
 void render_frame(GameState *game);
 void cleanup(GameState *game);
-
-/** Texture-related functions */
 bool load_textures(void);
 void unload_textures(void);
 SDL_Color get_texture_color(int texture_id, int x, int y);
+bool handle_collisions(GameState *game, float new_x, float new_y);
+void draw_map(GameState *game);
 
 /** Global variables */
 extern int worldMap[MAP_WIDTH][MAP_HEIGHT];
