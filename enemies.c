@@ -32,9 +32,9 @@ void update_enemies(GameState *game)
             float move_y = sinf(game->enemies[i].angle) * 0.05f;
 
             /** Check for collisions */
-            if (!handle_collisions(game, game->enemies[i].position.x + move_x, game->enemies[i].position.y))
+            if (!handle_collisions(game->enemies[i].position.x + move_x, game->enemies[i].position.y))
                 game->enemies[i].position.x += move_x;
-            if (!handle_collisions(game, game->enemies[i].position.x, game->enemies[i].position.y + move_y))
+            if (!handle_collisions(game->enemies[i].position.x, game->enemies[i].position.y + move_y))
                 game->enemies[i].position.y += move_y;
         }
     }
