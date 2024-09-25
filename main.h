@@ -9,33 +9,36 @@
 #define SCREEN_HEIGHT 480
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
-#define FOV 60
-#define NUM_RAYS SCREEN_WIDTH
+#define TILE_SIZE 64
 
+/** Structure to represent a 2D vector */
 typedef struct {
     float x;
     float y;
-    float angle;
-} Player;
+} Vector2;
 
+/** Structure to hold game state */
 typedef struct {
     SDL_Window *window;
     SDL_Renderer *renderer;
-    Player player;
-    int map[MAP_WIDTH][MAP_HEIGHT];
-    float ray_distances[NUM_RAYS];
+    bool is_running;
+    Vector2 player_pos;
+    float player_angle;
 } GameState;
 
-/* Function prototypes */
+/** Function prototypes */
 bool init_sdl(GameState *game);
+void handle_events(GameState *game);
+void update_game_state(GameState *game);
+void render_frame(GameState *game);
 void cleanup(GameState *game);
-void handle_events(GameState *game, bool *quit);
-void cast_rays(GameState *game);
-void draw_walls(GameState *game);
-void draw_floor_ceiling(GameState *game);
-void draw_map(GameState *game);
-void move_player(GameState *game, float dx, float dy);
-void rotate_player(GameState *game, float angle);
-bool load_map(GameState *game, const char *filename);
+
+/** Texture-related functions */
+bool load_textures(void);
+void unload_textures(void);
+SDL_Color get_texture_color(int texture_id, int x, int y);
+
+/** Global variables */
+extern int worldMap[MAP_WIDTH][MAP_HEIGHT];
 
 #endif /* MAIN_H */
