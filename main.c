@@ -1,78 +1,47 @@
-#include "main.h"
+#ifndef MAIN_H
+#define MAIN_H
 
-SDL_Window *window = NULL;
-SDL_Renderer *renderer = NULL;
-int quit_game = 0;
-int map[MAP_WIDTH][MAP_HEIGHT];
-Player player;
-SDL_Texture *wall_textures[4];
+#include <SDL2/SDL.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
 
-/**
- * main - Entry point of the program
- *
- * Return: 0 on success, exit code on failure
- */
-int main(void)
+/* Screen dimensions */
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 480
+#define MAP_WIDTH 24
+#define MAP_HEIGHT 24
+#define MOVE_SPEED 0.1
+#define ROT_SPEED 0.05
+
+/* Player struct */
+typedef struct Player
 {
-    if (init_sdl() != 0)
-        return (EXIT_FAILURE);
+    float x, y;
+    float dir_x, dir_y;
+    float plane_x, plane_y;
+} Player;
 
-    if (load_textures() != 0)
-        return (EXIT_FAILURE);
+/* Function prototypes */
+int init_sdl(void);
+void cleanup_sdl(void);
+void handle_input(void);
+void render_walls(void);
+int load_map(const char *filename);
+int load_textures(void);
+void cleanup_textures(void);
+int check_collision(float new_x, float new_y);
+void move_forward(void);
+void move_backward(void);
+void rotate_left(void);
+void rotate_right(void);
 
-    if (load_map("map.txt") != 0)
-        return (EXIT_FAILURE);
+/* External declarations */
+extern SDL_Window *window;
+extern SDL_Renderer *renderer;
+extern int quit_game;
+extern int map[MAP_WIDTH][MAP_HEIGHT];
+extern Player player;
+extern SDL_Texture *wall_textures[4];
 
-    /* Game loop */
-    while (!quit_game)
-    {
-        handle_input();
-        render_walls();
-        SDL_RenderPresent(renderer); /* Update screen */
-        SDL_Delay(16); /* Limit to ~60 frames per second */
-    }
-
-    cleanup_textures();
-    cleanup_sdl();
-    return (0);
-}
-
-/**
- * init_sdl - Initialize SDL2 and create window
- *
- * Return: 0 on success, -1 on failure
- */
-int init_sdl(void)
-{
-    if (SDL_Init(SDL_INIT_VIDEO) < 0)
-        return (-1);
-
-    window = SDL_CreateWindow("Maze Project", SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (window == NULL)
-        return (-1);
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (renderer == NULL)
-        return (-1);
-
-    quit_game = 0; /* Initialize quit flag to false */
-    player.x = 3.0;
-    player.y = 3.0;
-    player.dir_x = -1.0;
-    player.dir_y = 0.0;
-    player.plane_x = 0.0;
-    player.plane_y = 0.66;
-
-    return (0);
-}
-
-/**
- * cleanup_sdl - Clean up and quit SDL
- */
-void cleanup_sdl(void)
-{
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}
+#endif /* MAIN_H */
