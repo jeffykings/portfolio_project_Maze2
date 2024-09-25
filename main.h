@@ -1,66 +1,40 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-/** Define the Player struct **/
-typedef struct Player {
-    float x;   // Player's x position
-    float y;   // Player's y position
-    float angle;  // Player's view angle
-    float speed;  // Player's movement speed
-} Player;
-
 #include <SDL2/SDL.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 
-/* Screen dimensions */
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
-#define MOVE_SPEED 0.1
-#define ROT_SPEED 0.05
+#define FOV 60
+#define NUM_RAYS SCREEN_WIDTH
 
-extern SDL_Window *window;
-extern SDL_Renderer *renderer;
-extern int quit_game;
-extern int map[MAP_WIDTH][MAP_HEIGHT];
-extern Player player;
-
-/* Function prototypes */
-int init_sdl(void);
-void cleanup_sdl(void);
-void handle_input(void);
-void render_walls(void);
-int load_map(const char *filename);
-int load_textures(void);
-void cleanup_textures(void);
-int check_collision(float new_x, float new_y);
-void move_forward(void);
-void move_backward(void);
-void rotate_left(void);
-void rotate_right(void);
-
-/* SDL variables */
-SDL_Window *window;
-SDL_Renderer *renderer;
-int quit_game;
-
-/* Map data */
-int map[MAP_WIDTH][MAP_HEIGHT];
-
-/* Wall textures */
-extern SDL_Texture *wall_textures[4];
-
-/* Player struct */
-typedef struct Player
-{
-    float x, y;
-    float dir_x, dir_y;
-    float plane_x, plane_y;
+typedef struct {
+    float x;
+    float y;
+    float angle;
 } Player;
 
-Player player;
+typedef struct {
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    Player player;
+    int map[MAP_WIDTH][MAP_HEIGHT];
+} GameState;
 
-#endif
+/* Function prototypes */
+bool init_sdl(GameState *game);
+void cleanup(GameState *game);
+void handle_events(GameState *game, bool *quit);
+void cast_rays(GameState *game);
+void draw_walls(GameState *game);
+void draw_floor_ceiling(GameState *game);
+void draw_map(GameState *game);
+void move_player(GameState *game, float dx, float dy);
+void rotate_player(GameState *game, float angle);
+bool load_map(GameState *game, const char *filename);
+
+#endif /* MAIN_H */
