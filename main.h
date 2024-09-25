@@ -23,6 +23,7 @@ typedef struct {
     SDL_Renderer *renderer;
     Player player;
     int map[MAP_WIDTH][MAP_HEIGHT];
+    float ray_distances[NUM_RAYS];
 } GameState;
 
 /* Function prototypes */
