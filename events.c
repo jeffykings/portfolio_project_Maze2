@@ -1,12 +1,14 @@
 #include "main.h"
 
 /**
- * handle_events - Process SDL events
+ * handle_events - Process SDL events and update game state
  * @game: Pointer to the GameState structure
  */
 void handle_events(GameState *game)
 {
     SDL_Event event;
+    const Uint8 *keyboard_state = SDL_GetKeyboardState(NULL);
+
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
@@ -20,22 +22,27 @@ void handle_events(GameState *game)
                     case SDLK_ESCAPE:
                         game->is_running = false;
                         break;
-                    case SDLK_LEFT:
-                        game->player_angle -= 0.1f;
-                        break;
-                    case SDLK_RIGHT:
-                        game->player_angle += 0.1f;
-                        break;
-                    case SDLK_UP:
-                        game->player_pos.x += cosf(game->player_angle) * 0.2f;
-                        game->player_pos.y += sinf(game->player_angle) * 0.2f;
-                        break;
-                    case SDLK_DOWN:
-                        game->player_pos.x -= cosf(game->player_angle) * 0.2f;
-                        game->player_pos.y -= sinf(game->player_angle) * 0.2f;
+                    case SDLK_m:
+                        game->show_map = !game->show_map;
                         break;
                 }
                 break;
         }
+    }
+
+    /** Handle continuous key presses */
+    if (keyboard_state[SDL_SCANCODE_LEFT])
+        game->player_angle -= 0.05f;
+    if (keyboard_state[SDL_SCANCODE_RIGHT])
+        game->player_angle += 0.05f;
+    if (keyboard_state[SDL_SCANCODE_UP])
+    {
+        game->player_pos.x += cosf(game->player_angle) * 0.1f;
+        game->player_pos.y += sinf(game->player_angle) * 0.1f;
+    }
+    if (keyboard_state[SDL_SCANCODE_DOWN])
+    {
+        game->player_pos.x -= cosf(game->player_angle) * 0.1f;
+        game->player_pos.y -= sinf(game->player_angle) * 0.1f;
     }
 }
