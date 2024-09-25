@@ -1,6 +1,14 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+/** Define the Player struct **/
+typedef struct {
+    float x;   // Player's x position
+    float y;   // Player's y position
+    float angle;  // Player's view angle
+    float speed;  // Player's movement speed
+} Player;
+
 #include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
