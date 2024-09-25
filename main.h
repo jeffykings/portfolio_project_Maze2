@@ -16,6 +16,9 @@
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
+extern int quit_game;
+extern int map[MAP_WIDTH][MAP_HEIGHT];
+extern Player player;
 
 /* Function prototypes */
 int init_sdl(void);
