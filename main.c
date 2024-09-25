@@ -1,45 +1,66 @@
 #include "main.h"
 
+/** The game map */
+int worldMap[MAP_WIDTH][MAP_HEIGHT] = {
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,2,2,2,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+    {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,3,0,0,0,3,0,0,0,1},
+    {1,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,2,2,0,2,2,0,0,0,0,3,0,3,0,3,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,4,0,0,0,0,5,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,4,0,4,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,4,0,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,4,4,4,4,4,4,4,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+};
+
 /**
- * main - Entry point for the maze game
- * @argc: Number of command-line arguments
- * @argv: Array of command-line argument strings
+ * main - Entry point of the program
+ *
  * Return: 0 on success, 1 on failure
  */
-int main(int argc, char *argv[])
+int main(void)
 {
     GameState game;
-    bool quit = false;
-
-    if (argc != 2)
-    {
-        fprintf(stderr, "Usage: %s <map_file>\n", argv[0]);
-        return 1;
-    }
+    game.is_running = true;
+    game.player_pos.x = 22;
+    game.player_pos.y = 12;
+    game.player_angle = 0;
 
     if (!init_sdl(&game))
     {
-        fprintf(stderr, "Failed to initialize SDL\n");
         return 1;
     }
 
-    if (!load_map(&game, argv[1]))
+    if (!load_textures())
     {
-        fprintf(stderr, "Failed to load map\n");
         cleanup(&game);
         return 1;
     }
 
-    while (!quit)
+    /** Main game loop */
+    while (game.is_running)
     {
-        handle_events(&game, &quit);
-        cast_rays(&game);
-        draw_floor_ceiling(&game);
-        draw_walls(&game);
-        draw_map(&game);
-        SDL_RenderPresent(game.renderer);
+        handle_events(&game);
+        update_game_state(&game);
+        render_frame(&game);
     }
 
+    unload_textures();
     cleanup(&game);
     return 0;
 }
