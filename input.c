@@ -1,73 +1,33 @@
 #include "main.h"
 
 /**
- * handle_input - Process player input for movement and rotation
+ * handle_events - Handle user input and events
+ * @game: Pointer to the GameState structure
+ * @quit: Pointer to the quit flag
  */
-void handle_input(void)
+void handle_events(GameState *game, bool *quit)
 {
     SDL_Event e;
-    while (SDL_PollEvent(&e))
+    const Uint8 *keystate = SDL_GetKeyboardState(NULL);
+
+    while (SDL_PollEvent(&e) != 0)
     {
         if (e.type == SDL_QUIT)
-            quit_game = 1;
-
-        if (e.type == SDL_KEYDOWN)
         {
-            switch (e.key.keysym.sym)
-            {
-                case SDLK_w: move_forward(); break;
-                case SDLK_s: move_backward(); break;
-                case SDLK_a: rotate_left(); break;
-                case SDLK_d: rotate_right(); break;
-            }
+            *quit = true;
         }
     }
-}
 
-/**
- * move_forward - Move the player forward
- */
-void move_forward(void)
-{
-    if (map[(int)(player.x + player.dir_x * MOVE_SPEED)][(int)(player.y)] == 0)
-        player.x += player.dir_x * MOVE_SPEED;
-    if (map[(int)(player.x)][(int)(player.y + player.dir_y * MOVE_SPEED)] == 0)
-        player.y += player.dir_y * MOVE_SPEED;
-}
-
-/**
- * move_backward - Move the player backward
- */
-void move_backward(void)
-{
-    if (map[(int)(player.x - player.dir_x * MOVE_SPEED)][(int)(player.y)] == 0)
-        player.x -= player.dir_x * MOVE_SPEED;
-    if (map[(int)(player.x)][(int)(player.y - player.dir_y * MOVE_SPEED)] == 0)
-        player.y -= player.dir_y * MOVE_SPEED;
-}
-
-/**
- * rotate_left - Rotate the player left
- */
-void rotate_left(void)
-{
-    double old_dir_x = player.dir_x;
-    player.dir_x = player.dir_x * cos(-ROT_SPEED) - player.dir_y * sin(-ROT_SPEED);
-    player.dir_y = old_dir_x * sin(-ROT_SPEED) + player.dir_y * cos(-ROT_SPEED);
-    double old_plane_x = player.plane_x;
-    player.plane_x = player.plane_x * cos(-ROT_SPEED) - player.plane_y * sin(-ROT_SPEED);
-    player.plane_y = old_plane_x * sin(-ROT_SPEED) + player.plane_y * cos(-ROT_SPEED);
-}
-
-/**
- * rotate_right - Rotate the player right
- */
-void rotate_right(void)
-{
-    double old_dir_x = player.dir_x;
-    player.dir_x = player.dir_x * cos(ROT_SPEED) - player.dir_y * sin(ROT_SPEED);
-    player.dir_y = old_dir_x * sin(ROT_SPEED) + player.dir_y * cos(ROT_SPEED);
-    double old_plane_x = player.plane_x;
-    player.plane_x = player.plane_x * cos(ROT_SPEED) - player.plane_y * sin(ROT_SPEED);
-    player.plane_y = old_plane_x * sin(ROT_SPEED) + player.plane_y * cos(ROT_SPEED);
+    if (keystate[SDL_SCANCODE_W])
+        move_player(game, 0.1f, 0);
+    if (keystate[SDL_SCANCODE_S])
+        move_player(game, -0.1f, 0);
+    if (keystate[SDL_SCANCODE_A])
+        move_player(game, 0, -0.1f);
+    if (keystate[SDL_SCANCODE_D])
+        move_player(game, 0, 0.1f);
+    if (keystate[SDL_SCANCODE_LEFT])
+        rotate_player(game, -0.1f);
+    if (keystate[SDL_SCANCODE_RIGHT])
+        rotate_player(game, 0.1f);
 }
