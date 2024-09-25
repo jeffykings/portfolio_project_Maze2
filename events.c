@@ -70,8 +70,8 @@ void handle_events(GameState *game)
     }
 
     /** Apply movement if no collision */
-    if (!handle_collisions(game, game->player_pos.x + move_x, game->player_pos.y))
+    if (!handle_collisions(game->player_pos.x + move_x, game->player_pos.y))
         game->player_pos.x += move_x;
-    if (!handle_collisions(game, game->player_pos.x, game->player_pos.y + move_y))
+    if (!handle_collisions(game->player_pos.x, game->player_pos.y + move_y))
         game->player_pos.y += move_y;
 }
