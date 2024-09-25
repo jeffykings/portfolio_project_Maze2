@@ -40,6 +40,8 @@ int main(void)
     game.player_pos.y = 12;
     game.player_angle = 0;
     game.show_map = false;
+    game.is_raining = false;
+    game.current_weapon = 0;
 
     if (!init_sdl(&game))
     {
@@ -52,11 +54,14 @@ int main(void)
         return 1;
     }
 
+    init_enemies(&game);
+
     /** Main game loop */
     while (game.is_running)
     {
         handle_events(&game);
         update_game_state(&game);
+        update_enemies(&game);
         render_frame(&game);
 
         SDL_Delay(16);  /** Cap to ~60 FPS */
