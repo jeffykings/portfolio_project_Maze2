@@ -33,7 +33,7 @@ void update_game_state(GameState *game)
  *
  * Return: true if collision occurred, false otherwise
  */
-bool handle_collisions(GameState *game, float new_x, float new_y)
+bool handle_collisions(float new_x, float new_y)
 {
     int map_pos_x = (int)new_x;
     int map_pos_y = (int)new_y;
