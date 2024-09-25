@@ -45,7 +45,7 @@ void cleanup(GameState *game);
 bool load_textures(void);
 void unload_textures(void);
 SDL_Color get_texture_color(int texture_id, int x, int y);
-bool handle_collisions(GameState *game, float new_x, float new_y);
+bool handle_collisions(float new_x, float new_y);
 void draw_map(GameState *game);
 void init_enemies(GameState *game);
 void update_enemies(GameState *game);
